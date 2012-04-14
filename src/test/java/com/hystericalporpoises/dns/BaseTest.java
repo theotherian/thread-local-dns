@@ -13,6 +13,7 @@ public abstract class BaseTest {
     ThreadLocalDnsConfiguration dnsConfiguration = TestObjects.makeThreadLocalDnsConfiguration();
     OverrideNameService nameService = new OverrideNameService(dnsConfiguration.getMappings());
     OverrideNameServiceManager.initializeForThread(nameService);
+    TestServlets.createServlets();
   }
 
   private static DnsConfiguration createConfig() {

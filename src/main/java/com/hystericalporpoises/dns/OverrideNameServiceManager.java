@@ -7,11 +7,22 @@ class OverrideNameServiceManager {
 
   private static final OverrideNameServiceManager MANAGER = new OverrideNameServiceManager();
 
-  void initializeForThread(OverrideNameService configuration) {
+  private OverrideNameServiceManager() {}
+
+  static void initializeForThread(OverrideNameService configuration) {
     MANAGER.configuration.set(configuration);
   }
 
-  String getIpForHost(String host) {
-    return MANAGER.configuration.get().getIpForHost(host);
+  static String getIpForHost(String host) {
+    return instance().getIpForHost(host);
   }
+
+  static boolean hasIpForHost(String host) {
+    return instance().hasIpForHost(host);
+  }
+
+  private static OverrideNameService instance() {
+    return MANAGER.configuration.get();
+  }
+
 }

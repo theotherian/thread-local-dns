@@ -3,9 +3,14 @@ package com.hystericalporpoises.dns;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Initializes the thread local settings for your application. Make sure this method
@@ -18,13 +23,20 @@ public final class ThreadLocalDns {
 
   private static final Logger LOGGER = Logger.getLogger(ThreadLocalDns.class);
 
+  private static volatile boolean initialized = false;
 
   /**
    * Initializes from a configuration object constructed by the user
    * @param configuration
    */
-  public static void initialize(DnsConfiguration configuration) {
+  public static void initialize(DnsConfiguration dnsConfiguration) {
     initialize();
+    int size = dnsConfiguration.getDnsConfigurations().size();
+    ExecutorService threadPool = Executors.newFixedThreadPool(size, new ProxyThreadFactory());
+
+    for (ThreadLocalDnsConfiguration configuration : dnsConfiguration.getDnsConfigurations()) {
+      threadPool.submit(new ProxyThread(configuration));
+    }
   }
 
 
@@ -49,10 +61,30 @@ public final class ThreadLocalDns {
     initializeFromJson(json);
   }
 
-  private static void initialize() {
-    LOGGER.info("Initializing thread local DNS settings");
-    System.setProperty("sun.net.spi.nameservice.provider.1", "dns,thread-local-dns");
-    Security.setProperty("networkaddress.cache.ttl", "0");
+  @VisibleForTesting
+  static void initialize() {
+    if (!initialized) {
+      LOGGER.info("Initializing thread local DNS settings");
+      ThreadLocalDnsDescriptor descriptor = new ThreadLocalDnsDescriptor();
+      String provider = descriptor.getType() + "," + descriptor.getProviderName();
+      System.setProperty("sun.net.spi.nameservice.provider.1", provider);
+      Security.setProperty("networkaddress.cache.ttl", "0");
+      initialized = true;
+    }
+    else {
+      throw new RuntimeException("You can't initialize DNS twice in an application");
+    }
+  }
+
+  private static class ProxyThreadFactory implements ThreadFactory {
+
+    private int counter = 0;
+
+    @Override
+    public Thread newThread(Runnable r) {
+      return new Thread(r, "ProxyThread-" + counter++);
+    }
+
   }
 
 }

@@ -12,22 +12,22 @@ import com.google.common.collect.Lists;
 
 @AutoProperty
 @Immutable
-public final class IpToHostsMapping {
+public final class ThreadLocalDnsConfiguration {
 
-  private String ipAddress;
+  private int proxyPort;
 
-  private List<String> hosts = Lists.newArrayList();
+  private List<IpToHostsMapping> mappings = Lists.newArrayList();
 
-  public IpToHostsMapping() {}
+  public ThreadLocalDnsConfiguration() {}
 
-  public IpToHostsMapping(String ipAddress, List<String> hosts) {
-    this.ipAddress = ipAddress;
-    this.hosts = hosts;
+  public ThreadLocalDnsConfiguration(int proxyPort, List<IpToHostsMapping> mappings) {
+    this.proxyPort = proxyPort;
+    this.mappings = mappings;
   }
 
-  public final String getIpAddress() { return this.ipAddress; }
+  public final int getProxyPort() { return this.proxyPort; }
 
-  public final List<String> getHosts() { return ImmutableList.copyOf(hosts); }
+  public final List<IpToHostsMapping> getMappings() { return ImmutableList.copyOf(mappings); }
 
   @Override public boolean equals(Object o) {
     return Pojomatic.equals(this, o);

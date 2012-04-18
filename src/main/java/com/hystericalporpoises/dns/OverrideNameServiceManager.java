@@ -1,9 +1,21 @@
 package com.hystericalporpoises.dns;
 
+import java.util.Collections;
+
+/**
+ *
+ * @author isimpson
+ *
+ */
 class OverrideNameServiceManager {
 
   private final InheritableThreadLocal<OverrideNameService> configuration =
-      new InheritableThreadLocal<OverrideNameService>();
+      new InheritableThreadLocal<OverrideNameService>() {
+      @Override
+      protected OverrideNameService initialValue() {
+        return new OverrideNameService(Collections.<IpToHostsMapping>emptyList());
+      };
+  };
 
   private static final OverrideNameServiceManager MANAGER = new OverrideNameServiceManager();
 

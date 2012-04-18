@@ -3,11 +3,19 @@ package com.hystericalporpoises.dns;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.Immutable;
+
 import com.google.common.collect.Maps;
 
+/**
+ * Translates DNS overrides into a map for easier lookup
+ * @author isimpson
+ *
+ */
+@Immutable
 final class OverrideNameService {
 
-  private Map<String, String> hostsToIpAddress = Maps.newHashMap();
+  private final Map<String, String> hostsToIpAddress = Maps.newHashMap();
 
   OverrideNameService(List<IpToHostsMapping> mappings) {
     for (IpToHostsMapping mapping : mappings) {

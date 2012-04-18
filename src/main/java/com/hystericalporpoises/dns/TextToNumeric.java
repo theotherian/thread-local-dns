@@ -1,5 +1,9 @@
 package com.hystericalporpoises.dns;
 
+/**
+ * Converts a string representation into an array of bytes.  Particularly useful for translating
+ * ip addresses represented as a string.
+ */
 final class TextToNumeric {
 
   private TextToNumeric() {}

@@ -3,6 +3,11 @@ package com.hystericalporpoises.dns;
 import sun.net.spi.nameservice.NameService;
 import sun.net.spi.nameservice.NameServiceDescriptor;
 
+/**
+ * Used to specify the DNS provider information
+ * @author isimpson
+ *
+ */
 @SuppressWarnings("restriction")
 public class ThreadLocalDnsDescriptor implements NameServiceDescriptor {
 

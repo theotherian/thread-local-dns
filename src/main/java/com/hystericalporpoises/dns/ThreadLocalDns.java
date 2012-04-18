@@ -1,16 +1,12 @@
 package com.hystericalporpoises.dns;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.Security;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Initializes the thread local settings for your application. Make sure this method
@@ -18,6 +14,7 @@ import com.google.common.annotations.VisibleForTesting;
  * initialized.<br>
  * If you try to initialize the thread local DNS settings after DNS has initialized, the settings
  * will not be detected.
+ * @author isimpson
  */
 public final class ThreadLocalDns {
 
@@ -25,44 +22,36 @@ public final class ThreadLocalDns {
 
   private static volatile boolean initialized = false;
 
+  private static final ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadLocalDnsFactory());
+
   /**
-   * Initializes from a configuration object constructed by the user
+   * Run the provided context inside of an thread local DNS configuration that is inheritable so
+   * that all threads spawned in the context have the same configuration.
    * @param configuration
+   * @param context
    */
-  public static void initialize(DnsConfiguration dnsConfiguration) {
-    initialize();
-    int size = dnsConfiguration.getDnsConfigurations().size();
-    ExecutorService threadPool = Executors.newFixedThreadPool(size, new ProxyThreadFactory());
+  public static void executeContext(final ThreadLocalDnsConfiguration configuration,
+    final ThreadLocalDnsContext context) {
 
-    for (ThreadLocalDnsConfiguration configuration : dnsConfiguration.getDnsConfigurations()) {
-      threadPool.submit(new ProxyThread(configuration));
-    }
+    threadPool.submit(new Runnable() {
+
+      @Override
+      public void run() {
+        OverrideNameService nameService = new OverrideNameService(configuration.getMappings());
+        OverrideNameServiceManager.initializeForThread(nameService);
+        nameService.validate();
+        context.execute();
+      }
+
+    });
   }
 
 
   /**
-   * Initializes from a json string representing a {@link DnsConfiguration} object
-   * @param dnsConfigurationJson
+   * Initialize all system properties required for overriding DNS.
+   * @throws RuntimeException if you try to initialize twice
    */
-  public static void initializeFromJson(String dnsConfigurationJson) {
-    DnsConfiguration configuration = JsonService.deserialize(dnsConfigurationJson,
-      DnsConfiguration.class);
-    initialize(configuration);
-  }
-
-
-  /**
-   * Initializes from a stream producing a json string representing a {@link DnsConfiguration} object
-   * @param dnsConfigurationJsonStream
-   * @throws IOException
-   */
-  public static void initializeFromJson(InputStream dnsConfigurationJsonStream) throws IOException {
-    String json = IOUtils.toString(dnsConfigurationJsonStream);
-    initializeFromJson(json);
-  }
-
-  @VisibleForTesting
-  static void initialize() {
+  public static void initialize() {
     if (!initialized) {
       LOGGER.info("Initializing thread local DNS settings");
       ThreadLocalDnsDescriptor descriptor = new ThreadLocalDnsDescriptor();
@@ -76,13 +65,13 @@ public final class ThreadLocalDns {
     }
   }
 
-  private static class ProxyThreadFactory implements ThreadFactory {
+  private static class ThreadLocalDnsFactory implements ThreadFactory {
 
-    private int counter = 0;
+    private AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public Thread newThread(Runnable r) {
-      return new Thread(r, "ProxyThread-" + counter++);
+      return new Thread(r, "ThreadLocalDnsWorker-" + counter.getAndIncrement());
     }
 
   }

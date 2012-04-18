@@ -3,8 +3,11 @@ package com.hystericalporpoises.dns;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
+import static com.hystericalporpoises.dns.DnsConfigurationBuilder.*;
 
 import org.junit.Test;
+import org.littleshoot.proxy.DefaultHttpProxyServer;
+import org.littleshoot.proxy.HttpProxyServer;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -17,8 +20,37 @@ public class ProxyThreadTest extends BaseTest {
 
   @Test
   public void hitProxies() throws Exception {
-    validate(LOCAL_GOOGLE_PROXY_PORT, TestServlets.PORT1, "www.google.com", "www.yahoo.com");
-    validate(LOCAL_YAHOO_PROXY_PORT, TestServlets.PORT2, "www.yahoo.com", "www.google.com");
+    TestServlets.createServlets();
+
+    ThreadLocalDnsConfiguration google = newBuilder().map(hosts("www.google.com"), to("127.0.0.1")).build();
+    ThreadLocalDnsConfiguration yahoo = newBuilder().map(hosts("www.yahoo.com"), to("127.0.0.1")).build();
+
+    final int googlePort = 33333;
+    final int yahooPort = 33334;
+    createContext(google, googlePort);
+    createContext(yahoo, yahooPort);
+
+    validate(googlePort, TestServlets.PORT1, "www.google.com", "www.yahoo.com");
+    validate(yahooPort, TestServlets.PORT2, "www.yahoo.com", "www.google.com");
+  }
+
+
+  private void createContext(ThreadLocalDnsConfiguration google, final int googlePort) {
+    ThreadLocalDns.executeContext(google, new ThreadLocalDnsContext() {
+
+      @Override
+      public void execute() {
+        final HttpProxyServer proxyServer = new DefaultHttpProxyServer(googlePort);
+        proxyServer.start();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+          @Override
+          public void run() {
+            proxyServer.stop();
+          }
+        });
+      }
+    });
   }
 
 

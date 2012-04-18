@@ -12,6 +12,20 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+/**
+ * Name service that uses both thread local and global representations of DNS lookups.<br>
+ * <p>
+ * Order of resolution is as follows:
+ * <ul>
+ *   <li>First, see if the thread local cache has an ip for a host</li>
+ *   <li>Next, see if there was an ip for that host in the hosts file</li>
+ *   <li>Otherwise, look up from a global cache</li>
+ * </ul>
+ * Entries do not expire from cache, which is the default behavior in the JVM.
+ * </p>
+ * @author isimpson
+ *
+ */
 public class ThreadLocalNameService extends DNSJavaNameService {
 
   private static Logger LOGGER = Logger.getLogger(ThreadLocalNameService.class);
@@ -20,7 +34,7 @@ public class ThreadLocalNameService extends DNSJavaNameService {
     LOGGER.info("Thread Local DNS Name Service loaded");
   }
 
-  private InheritableThreadLocal<LoadingCache<String, InetAddress[]>> dnsCache = new InheritableThreadLocal<LoadingCache<String,InetAddress[]>>() {
+  private InheritableThreadLocal<LoadingCache<String, InetAddress[]>> threadLocalDnsCache = new InheritableThreadLocal<LoadingCache<String,InetAddress[]>>() {
     @Override
     protected LoadingCache<String, InetAddress[]> initialValue() {
       return CacheBuilder.newBuilder().build(new CacheLoader<String, InetAddress[]>() {
@@ -39,8 +53,8 @@ public class ThreadLocalNameService extends DNSJavaNameService {
             return convertToInetAddress(ipAddress);
           }
           else {
-            LOGGER.debug("No override found for " + key + ", performing normal resolution");
-            return normalLookup(key);
+            LOGGER.debug("No override found for " + key + ", looking up from global cache");
+            return dnsCache.get(key);
           }
         }
 
@@ -55,6 +69,16 @@ public class ThreadLocalNameService extends DNSJavaNameService {
     }
   };
 
+  private LoadingCache<String, InetAddress[]> dnsCache = CacheBuilder.newBuilder()
+      .build(new CacheLoader<String, InetAddress[]>() {
+
+        @Override
+        public InetAddress[] load(String key) throws Exception {
+          return normalLookup(key);
+        }
+
+      });
+
 
   @VisibleForTesting
   static boolean isLocal(InetAddress ip) {
@@ -65,46 +89,6 @@ public class ThreadLocalNameService extends DNSJavaNameService {
     super();
   }
 
-
-  @Override
-  public String getHostByAddr(byte[] in) throws UnknownHostException {
-    return super.getHostByAddr(in);
-  }
-
-  /**
-   * Lookup override
-   * @throws UnknownHostException for null hostname
-   */
-  @VisibleForTesting
-  static byte[] getOverride(String hostname) throws UnknownHostException {
-    LOGGER.debug("Looking up " + hostname);
-    if (hostname == null) {
-      throw new UnknownHostException("Null host string");
-    }
-
-    String val = null;
-    if (OverrideNameServiceManager.hasIpForHost(hostname)) {
-      val = OverrideNameServiceManager.getIpForHost(hostname);
-    }
-    else if (HostsFileResolver.hasOverride(hostname)) {
-      val = HostsFileResolver.getOverride(hostname);
-    }
-    return TextToNumeric.convert(val);
-  }
-
-  /**
-   * Return the address that corresponds with the given hostname
-   * @param hostname
-   * @throws UnknownHostException
-   */
-  public static InetAddress getByName(String hostname) throws UnknownHostException {
-    byte val[] = getOverride(hostname);
-    if (val == null) {
-      return InetAddress.getByName(hostname);
-    }
-    return InetAddress.getByAddress(val);
-  }
-
   private InetAddress[] normalLookup(String hostname) throws UnknownHostException {
     return super.lookupAllHostAddr(hostname);
   }
@@ -113,7 +97,7 @@ public class ThreadLocalNameService extends DNSJavaNameService {
   @Override
   public InetAddress[] lookupAllHostAddr(String hostname) throws UnknownHostException {
     try {
-      return dnsCache.get().get(hostname);
+      return threadLocalDnsCache.get().get(hostname);
     }
     catch (ExecutionException e) {
       throw new RuntimeException(e);

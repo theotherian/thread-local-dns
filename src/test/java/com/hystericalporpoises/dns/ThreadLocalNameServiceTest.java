@@ -3,7 +3,6 @@ package com.hystericalporpoises.dns;
 import static org.junit.Assert.*;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.Test;
 
@@ -25,11 +24,6 @@ public class ThreadLocalNameServiceTest extends BaseTest {
 
     host = InetAddress.getByName("www.amazon.com");
     assertFalse(ThreadLocalNameService.isLocal(host));
-  }
-
-  @Test(expected = UnknownHostException.class)
-  public void getOverrideFailsNull() throws Exception {
-    ThreadLocalNameService.getOverride(null);
   }
 
   @Test

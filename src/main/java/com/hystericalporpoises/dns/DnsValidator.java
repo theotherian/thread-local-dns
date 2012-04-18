@@ -6,13 +6,24 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 
-public final class DnsValidator {
+/**
+ * Checks settings prior to using overridden DNS.  If the ips don't resolve to the overridden
+ * values, then something wasn't initialized correctly in the application.
+ * @author isimpson
+ *
+ */
+final class DnsValidator {
 
   private DnsValidator() {}
 
   private static final Logger LOGGER = Logger.getLogger(DnsValidator.class);
 
-  public static void checkOverride(String host, String expectedIpAddress) {
+  /**
+   * Validate that the host resolves to the expected ip address
+   * @param host
+   * @param expectedIpAddress
+   */
+  static void checkOverride(String host, String expectedIpAddress) {
     try {
       String ipAddress = InetAddress.getByName(host).getHostAddress();
       if (!expectedIpAddress.equals(ipAddress)) {

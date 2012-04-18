@@ -8,17 +8,19 @@ import org.pojomatic.Pojomatic;
 import org.pojomatic.annotations.AutoProperty;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
+/**
+ * Represents hosts mapped to an ip address as an override
+ * @author isimpson
+ *
+ */
 @AutoProperty
 @Immutable
 public final class IpToHostsMapping {
 
-  private String ipAddress;
+  private final String ipAddress;
 
-  private List<String> hosts = Lists.newArrayList();
-
-  public IpToHostsMapping() {}
+  private final List<String> hosts;
 
   public IpToHostsMapping(String ipAddress, List<String> hosts) {
     this.ipAddress = ipAddress;

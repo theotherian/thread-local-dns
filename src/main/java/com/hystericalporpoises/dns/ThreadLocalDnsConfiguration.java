@@ -10,22 +10,20 @@ import org.pojomatic.annotations.AutoProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+/**
+ * Represents all of the host to ip address mappings for a given thread local scope
+ * @author isimpson
+ *
+ */
 @AutoProperty
 @Immutable
 public final class ThreadLocalDnsConfiguration {
 
-  private int proxyPort;
-
   private List<IpToHostsMapping> mappings = Lists.newArrayList();
 
-  public ThreadLocalDnsConfiguration() {}
-
-  public ThreadLocalDnsConfiguration(int proxyPort, List<IpToHostsMapping> mappings) {
-    this.proxyPort = proxyPort;
+  public ThreadLocalDnsConfiguration(List<IpToHostsMapping> mappings) {
     this.mappings = mappings;
   }
-
-  public final int getProxyPort() { return this.proxyPort; }
 
   public final List<IpToHostsMapping> getMappings() { return ImmutableList.copyOf(mappings); }
 

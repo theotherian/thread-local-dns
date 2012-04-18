@@ -14,6 +14,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+/**
+ * Reads the hosts file and parses it into a map.  Set up to be platform independent.
+ *
+ */
 final class HostsFileResolver {
 
   private static final Logger LOGGER = Logger.getLogger(HostsFileResolver.class);
@@ -38,9 +42,6 @@ final class HostsFileResolver {
     return instance.overrides.get(hostname);
   }
 
-  /**
-   * Parse the hosts file
-   */
   private Map<String, String> parseHostsFile() {
     Map<String, String> overrides = Maps.newHashMap();
     final String hosts;

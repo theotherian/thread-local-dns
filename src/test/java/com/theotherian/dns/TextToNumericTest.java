@@ -1,8 +1,10 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import com.theotherian.dns.TextToNumeric;
 
 public class TextToNumericTest extends BaseTest {
 

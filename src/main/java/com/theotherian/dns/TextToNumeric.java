@@ -1,4 +1,4 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 /**
  * Converts a string representation into an array of bytes.  Particularly useful for translating

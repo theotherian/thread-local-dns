@@ -1,11 +1,13 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import static org.junit.Assert.*;
-import static com.hystericalporpoises.dns.DnsConfigurationBuilder.*;
+import static com.theotherian.dns.DnsConfigurationBuilder.*;
 
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.theotherian.dns.IpToHostsMapping;
+import com.theotherian.dns.ThreadLocalDnsConfiguration;
 
 public class DnsConfigurationBuilderTest {
 

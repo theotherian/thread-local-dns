@@ -1,4 +1,4 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,6 +13,8 @@ import java.util.Arrays;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.theotherian.dns.HostsFileResolver;
 
 public class HostsFileResolverTest extends BaseTest {
 

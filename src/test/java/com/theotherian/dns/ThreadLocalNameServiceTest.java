@@ -1,10 +1,13 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import static org.junit.Assert.*;
 
 import java.net.InetAddress;
 
 import org.junit.Test;
+
+import com.theotherian.dns.TextToNumeric;
+import com.theotherian.dns.ThreadLocalNameService;
 
 public class ThreadLocalNameServiceTest extends BaseTest {
 

@@ -1,9 +1,9 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
-import static com.hystericalporpoises.dns.DnsConfigurationBuilder.*;
+import static com.theotherian.dns.DnsConfigurationBuilder.*;
 
 import org.junit.Test;
 import org.littleshoot.proxy.DefaultHttpProxyServer;
@@ -15,6 +15,9 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.theotherian.dns.ThreadLocalDns;
+import com.theotherian.dns.ThreadLocalDnsConfiguration;
+import com.theotherian.dns.ThreadLocalDnsContext;
 
 public class ProxyThreadTest extends BaseTest {
 

@@ -1,4 +1,4 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import java.util.Collections;
 

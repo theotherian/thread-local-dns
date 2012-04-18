@@ -1,6 +1,11 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
-import static com.hystericalporpoises.dns.DnsConfigurationBuilder.*;
+import static com.theotherian.dns.DnsConfigurationBuilder.*;
+
+import com.theotherian.dns.OverrideNameService;
+import com.theotherian.dns.OverrideNameServiceManager;
+import com.theotherian.dns.ThreadLocalDns;
+import com.theotherian.dns.ThreadLocalDnsConfiguration;
 
 public abstract class BaseTest {
 

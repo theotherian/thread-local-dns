@@ -1,4 +1,4 @@
-package com.hystericalporpoises.dns;
+package com.theotherian.dns;
 
 import sun.net.spi.nameservice.NameService;
 import sun.net.spi.nameservice.NameServiceDescriptor;

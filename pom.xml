@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.theotherian.dns</groupId>
   <artifactId>thread-local-dns</artifactId>
-  <version>trunk-SNAPSHOT</version>
+  <version>1.0-RC0</version>
   <name>thread-local-dns</name>
   <packaging>jar</packaging>
   <url>https://github.com/theotherian/thread-local-dns</url>

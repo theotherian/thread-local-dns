@@ -20,7 +20,8 @@ final class OverrideNameService {
   OverrideNameService(List<IpToHostsMapping> mappings) {
     for (IpToHostsMapping mapping : mappings) {
       for (String host : mapping.getHosts()) {
-        hostsToIpAddress.put(host, mapping.getIpAddress());
+        // lower case all keys - dns should be case insensitive
+        hostsToIpAddress.put(host.toLowerCase(), mapping.getIpAddress());
       }
     }
   }

@@ -1,1 +1,8 @@
 /thread-local-dns.log*
+/.idea
+/.classpath
+/.project
+/.settings
+/target
+/*.iml
+/*.ipr

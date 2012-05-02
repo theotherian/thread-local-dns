@@ -97,7 +97,11 @@ public class ThreadLocalNameService extends DNSJavaNameService {
   @Override
   public InetAddress[] lookupAllHostAddr(String hostname) throws UnknownHostException {
     try {
-      return threadLocalDnsCache.get().get(hostname);
+      if (hostname == null || hostname.isEmpty()) {
+        throw new UnsupportedOperationException("Invalid lookup of null or blank hostname");
+      }
+      // lower case the hostname since DNS is case insensitive
+      return threadLocalDnsCache.get().get(hostname.toLowerCase());
     }
     catch (ExecutionException e) {
       throw new RuntimeException(e);

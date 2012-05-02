@@ -5,11 +5,41 @@
   <artifactId>thread-local-dns</artifactId>
   <version>trunk-SNAPSHOT</version>
   <name>thread-local-dns</name>
+  <packaging>jar</packaging>
+  <url>https://github.com/theotherian/thread-local-dns</url>
+
+  <scm>
+    <connection>scm:git:git@github.com:theotherian/thread-local-dns.git</connection>
+    <url>scm:git:git@github.com:theotherian/thread-local-dns.git</url>
+    <developerConnection>scm:git:git@github.com:theotherian/thread-local-dns.git</developerConnection>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>theotherian</id>
+      <name>Ian Simpson</name>
+      <email>ian.simpson.code@gmail.com</email>
+      <url>http://www.theotherian.com</url>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven</groupId>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
@@ -17,6 +47,16 @@
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
       </plugin>
     </plugins>
   </build>
@@ -84,4 +124,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <repository>
+      <id>sonatype-releases</id>
+      <name>sonatype-releases</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-snapshots</id>
+      <name>sonatype-snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

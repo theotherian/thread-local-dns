@@ -6,6 +6,10 @@
   <name>thread-local-dns</name>
   <packaging>jar</packaging>
   <url>https://github.com/theotherian/thread-local-dns</url>
+  <description>
+    Alternative DNS implementation that supports overriding DNS lookups
+    within the scope of an inheritable thread local value
+  </description>
 
   <scm>
     <connection>scm:git:git@github.com:theotherian/thread-local-dns.git</connection>
@@ -56,6 +60,20 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.1.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

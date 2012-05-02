@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.theotherian.dns</groupId>
   <artifactId>thread-local-dns</artifactId>
-  <version>trunk-SNAPSHOT</version>
+  <version>1.0-RC2</version>
   <name>thread-local-dns</name>
   <packaging>jar</packaging>
   <url>https://github.com/theotherian/thread-local-dns</url>
@@ -74,6 +74,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <mavenExecutorId>forked-path</mavenExecutorId>
+        </configuration>
       </plugin>
     </plugins>
   </build>

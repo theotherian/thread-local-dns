@@ -34,41 +34,6 @@ public class ThreadLocalNameService extends DNSJavaNameService {
     LOGGER.info("Thread Local DNS Name Service loaded");
   }
 
-  private InheritableThreadLocal<LoadingCache<String, InetAddress[]>> threadLocalDnsCache = new InheritableThreadLocal<LoadingCache<String,InetAddress[]>>() {
-    @Override
-    protected LoadingCache<String, InetAddress[]> initialValue() {
-      return CacheBuilder.newBuilder().build(new CacheLoader<String, InetAddress[]>() {
-
-        @Override
-        public InetAddress[] load(String key) throws Exception {
-          LOGGER.debug("Looking up " + key);
-          if (OverrideNameServiceManager.hasIpForHost(key)) {
-            String ipAddress = OverrideNameServiceManager.getIpForHost(key);
-            LOGGER.debug("Found thread local override for " + key + " of " + ipAddress);
-            return convertToInetAddress(ipAddress);
-          }
-          else if (HostsFileResolver.hasOverride(key)) {
-            String ipAddress = HostsFileResolver.getOverride(key);
-            LOGGER.debug("Found hosts entry for " + key + " of " + ipAddress);
-            return convertToInetAddress(ipAddress);
-          }
-          else {
-            LOGGER.debug("No override found for " + key + ", looking up from global cache");
-            return dnsCache.get(key);
-          }
-        }
-
-        private InetAddress[] convertToInetAddress(String ipAddress) throws UnknownHostException {
-          byte[] ipAsBytes = TextToNumeric.convert(ipAddress);
-          InetAddress[] address = new InetAddress[1];
-          address[0] = InetAddress.getByAddress(ipAsBytes);
-          return address;
-        }
-
-      });
-    }
-  };
-
   private LoadingCache<String, InetAddress[]> dnsCache = CacheBuilder.newBuilder()
       .build(new CacheLoader<String, InetAddress[]>() {
 
@@ -97,11 +62,11 @@ public class ThreadLocalNameService extends DNSJavaNameService {
   @Override
   public InetAddress[] lookupAllHostAddr(String hostname) throws UnknownHostException {
     try {
-      if (hostname == null || hostname.isEmpty()) {
-        throw new UnsupportedOperationException("Invalid lookup of null or blank hostname");
+      InetAddress[] addresses = OverrideNameServiceManager.lookup(hostname);
+      if (addresses.length > 0) {
+        return addresses;
       }
-      // lower case the hostname since DNS is case insensitive
-      return threadLocalDnsCache.get().get(hostname.toLowerCase());
+      return dnsCache.get(hostname);
     }
     catch (ExecutionException e) {
       throw new RuntimeException(e);

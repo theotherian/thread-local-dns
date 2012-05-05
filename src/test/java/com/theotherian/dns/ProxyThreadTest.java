@@ -28,8 +28,8 @@ public class ProxyThreadTest extends BaseTest {
     ThreadLocalDnsConfiguration google = newBuilder().map(hosts("www.google.com"), to("127.0.0.1")).build();
     ThreadLocalDnsConfiguration yahoo = newBuilder().map(hosts("www.yahoo.com"), to("127.0.0.1")).build();
 
-    final int googlePort = 33333;
-    final int yahooPort = 33334;
+    final int googlePort = 33335;
+    final int yahooPort = 33336;
     createContext(google, googlePort);
     createContext(yahoo, yahooPort);
 

@@ -22,10 +22,10 @@ public final class ThreadLocalDnsConfiguration {
   private List<IpToHostsMapping> mappings = Lists.newArrayList();
 
   public ThreadLocalDnsConfiguration(List<IpToHostsMapping> mappings) {
-    this.mappings = mappings;
+    this.mappings = ImmutableList.copyOf(mappings);
   }
 
-  public final List<IpToHostsMapping> getMappings() { return ImmutableList.copyOf(mappings); }
+  public final List<IpToHostsMapping> getMappings() { return mappings; }
 
   @Override public boolean equals(Object o) {
     return Pojomatic.equals(this, o);

@@ -24,12 +24,12 @@ public final class IpToHostsMapping {
 
   public IpToHostsMapping(String ipAddress, List<String> hosts) {
     this.ipAddress = ipAddress;
-    this.hosts = hosts;
+    this.hosts = ImmutableList.copyOf(hosts);
   }
 
   public final String getIpAddress() { return this.ipAddress; }
 
-  public final List<String> getHosts() { return ImmutableList.copyOf(hosts); }
+  public final List<String> getHosts() { return this.hosts; }
 
   @Override public boolean equals(Object o) {
     return Pojomatic.equals(this, o);

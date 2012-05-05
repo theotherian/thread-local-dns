@@ -25,6 +25,8 @@ final class DnsValidator {
    */
   static void checkOverride(String host, String expectedIpAddress) {
     try {
+      LOGGER.debug("Validating that " + host + " resolves to " + expectedIpAddress
+        + " for thread " + Thread.currentThread().getName());
       String ipAddress = InetAddress.getByName(host).getHostAddress();
       if (!expectedIpAddress.equals(ipAddress)) {
         throw new RuntimeException("Overridden DNS has not initialized correctly: tried to resolve "

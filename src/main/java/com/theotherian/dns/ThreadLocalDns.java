@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 /**
- * Initializes the thread local settings for your application. Make sure this method
+ * Initializes the thread local settings for your application. Make sure one of this type's initialize methods
  * is the first thing called in your application, or at least the first thing called before DNS is
  * initialized.<br>
  * If you try to initialize the thread local DNS settings after DNS has initialized, the settings
@@ -37,10 +37,15 @@ public final class ThreadLocalDns {
 
       @Override
       public void run() {
-        OverrideNameService nameService = new OverrideNameService(configuration.getMappings());
-        OverrideNameServiceManager.initializeForThread(nameService);
-        nameService.validate();
-        context.execute();
+        try {
+          OverrideNameService nameService = new OverrideNameService(configuration.getMappings());
+          OverrideNameServiceManager.initializeForThread(nameService);
+          OverrideNameServiceManager.initializeCache();
+          nameService.validate();
+          context.execute();
+        } catch (Throwable t) {
+          LOGGER.fatal("Context failed to start", t);
+        }
       }
 
     });
@@ -52,12 +57,25 @@ public final class ThreadLocalDns {
    * @throws RuntimeException if you try to initialize twice
    */
   public static void initialize() {
+    initialize(DnsConfigurationBuilder.newBuilder().build());
+  }
+
+  /**
+   * Initialize all system properties required for overriding DNS, and set a configuration for the main
+   * thread and all children of the main thread not created by the
+   * {@link #executeContext(ThreadLocalDnsConfiguration, ThreadLocalDnsContext)} method, which accepts its own
+   * configuration
+   * @param configuration
+   */
+  public static void initialize(ThreadLocalDnsConfiguration configuration) {
     if (!initialized) {
       LOGGER.info("Initializing thread local DNS settings");
       ThreadLocalDnsDescriptor descriptor = new ThreadLocalDnsDescriptor();
       String provider = descriptor.getType() + "," + descriptor.getProviderName();
       System.setProperty("sun.net.spi.nameservice.provider.1", provider);
       Security.setProperty("networkaddress.cache.ttl", "0");
+      OverrideNameService nameService = new OverrideNameService(configuration.getMappings());
+      OverrideNameServiceManager.initializeForThread(nameService);
       initialized = true;
     }
     else {
